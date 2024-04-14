@@ -23,14 +23,8 @@ class ListingViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        horizontalCollectionView.delegate = self
-        horizontalCollectionView.dataSource = self
-        
-        horizontalCollectionView.isScrollEnabled = true
-
-        
-//        verticalCollectionView.dataSource = self
-//        verticalCollectionView.delegate = self
+        setupHorizontalScrollView()
+        setupVerticalScrollView()
     }
     var presenter : ListingPresenterProtocol?
     
@@ -43,10 +37,19 @@ class ListingViewController: BaseViewController {
 extension ListingViewController: ListingViewControllerProtocol {
     func setupHorizontalScrollView() {
         // TODO: setup horizontal
+        horizontalCollectionView.delegate = self
+        horizontalCollectionView.dataSource = self
+        horizontalCollectionView.showsHorizontalScrollIndicator = false
+        
+        horizontalCollectionView.register(UINib(nibName: "HorizontalCollectionViewCell", bundle: nil) , forCellWithReuseIdentifier: "horizontalCell")
     }
     
     func setupVerticalScrollView() {
         // TODO: setup vertical
+        verticalCollectionView.dataSource = self
+        verticalCollectionView.delegate = self
+        verticalCollectionView.register(UINib(nibName: "VerticalCollectionViewCell", bundle: nil) , forCellWithReuseIdentifier: "verticalCell")
+
     }
     
     func setupNavigationBar() {
@@ -65,24 +68,41 @@ extension ListingViewController: ListingViewControllerProtocol {
 extension ListingViewController: UICollectionViewDelegate , UICollectionViewDataSource , UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        
+        if collectionView == self.horizontalCollectionView {
+            return 5
+        }else {
+            return 15
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == self.horizontalCollectionView{
+        
+        if collectionView == self.horizontalCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "horizontalCell", for: indexPath) as! HorizontalCollectionViewCell
             cell.backgroundColor = .red
+            cell.priceLabel.text = "99 TL"
+            cell.NameLabel.text = "deneme"
+            cell.attributeLabel.text = "attribue"
+            
+            return cell
+        }else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "verticalCell", for: indexPath) as! VerticalCollectionViewCell
+            cell.backgroundColor = .blue
             
             return cell
         }
-        
-        let cell = UICollectionViewCell()
-        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = (collectionView.frame.size.width-15)/3
-        return CGSize(width: size, height: size)
+        if collectionView == self.horizontalCollectionView {
+            let size = (collectionView.frame.size.width)
+            return CGSize(width: size, height: 170)
+        }else {
+            let size = (collectionView.frame.size.width - 25)/3
+            // TODO: cell yamuk
+            return CGSize(width: size, height: (collectionView.frame.height - 10)/3)
+        }
     }
     
     
