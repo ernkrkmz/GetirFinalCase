@@ -15,7 +15,12 @@ protocol ListingViewControllerProtocol: AnyObject {
 }
 
 class ListingViewController: BaseViewController {
-
+    
+    
+    @IBOutlet weak var basketView: UIView!
+    
+    @IBOutlet weak var basketLabel: UILabel!
+    @IBOutlet weak var basketImageView: UIImageView!
     @IBOutlet weak var horizontalCollectionView: UICollectionView!
     
     @IBOutlet weak var verticalCollectionView: UICollectionView!
@@ -25,6 +30,20 @@ class ListingViewController: BaseViewController {
         // Do any additional setup after loading the view.
         setupHorizontalScrollView()
         setupVerticalScrollView()
+        
+        basketView.layer.cornerRadius = 10
+        basketImageView.layer.cornerRadius = 10
+        
+        let realURL = URL(string: "https://65c38b5339055e7482c12050.mockapi.io/api/suggestedProducts")!
+        CardRepository().haberleriIndir(url: realURL) { (data) in
+            print(data?.first?.products.first?.name)
+            
+        }
+        
+//            let data = CardRepository().getHorizontalCardData()
+//            print(data?.first?.name ?? "asd")
+        
+        
     }
     var presenter : ListingPresenterProtocol?
     
@@ -64,7 +83,7 @@ extension ListingViewController: ListingViewControllerProtocol {
         
     }
 }
-
+// MARK: CollcetionView
 extension ListingViewController: UICollectionViewDelegate , UICollectionViewDataSource , UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -80,8 +99,8 @@ extension ListingViewController: UICollectionViewDelegate , UICollectionViewData
         
         if collectionView == self.horizontalCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "horizontalCell", for: indexPath) as! HorizontalCollectionViewCell
-            cell.backgroundColor = .red
-            cell.priceLabel.text = "99 TL"
+            
+            cell.priceLabel.text = "₺ 990"
             cell.NameLabel.text = "deneme"
             cell.attributeLabel.text = "attribue"
             
@@ -97,15 +116,12 @@ extension ListingViewController: UICollectionViewDelegate , UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == self.horizontalCollectionView {
             let size = (collectionView.frame.size.width)
-            return CGSize(width: size, height: 170)
+            return CGSize(width: size - 285, height: 170)
         }else {
             let size = (collectionView.frame.size.width - 25)/3
             // TODO: cell yamuk
             return CGSize(width: size, height: (collectionView.frame.height - 10)/3)
         }
     }
-    
-    
-    
 }
 

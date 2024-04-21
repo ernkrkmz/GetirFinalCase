@@ -17,8 +17,8 @@ struct HorizontalWelcomeElement: Codable {
 struct HorizontalProduct: Codable {
     let id: String
     let imageURL: String?
-    let price: Double
-    let name, priceText: String
+    let price: Double?
+    let name, priceText: String?
     let shortDescription, category: String?
     let unitPrice: Double?
     let squareThumbnailURL: String?
