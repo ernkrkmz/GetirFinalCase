@@ -38,6 +38,8 @@ class HorizontalCollectionViewCell: UICollectionViewCell {
         self.deleteButton.isHidden = false
         self.count += 1
         countLabel.text = String(self.count)
+        
+        
     }
     
     @IBAction func deleteButtonClicked(_ sender: Any) {
@@ -45,6 +47,7 @@ class HorizontalCollectionViewCell: UICollectionViewCell {
             self.count -= 1
             self.countView.isHidden = true
             self.deleteButton.isHidden = true
+            
         } else {
             self.count -= 1
             countLabel.text = String(self.count)

@@ -23,14 +23,13 @@ final class ListingInteractor {
 extension ListingInteractor: ListingInteractorProtocol {
     func fetchVerticalScrollPosts() {
         let cardRepository = CardRepository()
-        let cards = cardRepository.getVerticalCardData() ?? [VerticalProduct]()
-        self.output?.fetchVerticalScrollPosts(data: cards)
+        
     }
     
     func fetchHorizontalScrollPosts() {
         let cardRepository = CardRepository()
-        let cards = cardRepository.getHorizontalCardData() ?? [HorizontalProduct]()
-        self.output?.fetchHorizontalScrollPosts(data: cards)
+//        let cards = cardRepository.getHorizontalCardData() ?? [HorizontalProduct]()
+//        self.output?.fetchHorizontalScrollPosts(data: cards)
     }
     
     
