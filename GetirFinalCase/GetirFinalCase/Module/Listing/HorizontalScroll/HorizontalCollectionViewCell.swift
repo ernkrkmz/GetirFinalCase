@@ -38,12 +38,15 @@ class HorizontalCollectionViewCell: UICollectionViewCell {
     var count = 0
     var horizontalProduct : HorizontalProduct?
     
+    var horizontalBasket = Basket().horizontalProduct
+    
     var delegate : HorizontalCollectionViewCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         configure()
+        configureItems()
     }
     
     @IBAction func addButtonClicked(_ sender: Any) {
@@ -92,6 +95,27 @@ extension HorizontalCollectionViewCell {
         imageview.layer.borderWidth = 1
         imageview.layer.cornerRadius = 15
         imageview.layer.borderColor = CGColor(red: 0.749, green: 0.749, blue: 0.749, alpha: 1.0)
+    }
+    
+    func configureItems() {
+        
+        // TODO: sonra yap
+        
+//        var count = 0
+//        guard let horizontalBasket = self.horizontalBasket else{ return }
+//        for product in horizontalBasket {
+//            if NameLabel.text == product.name {
+//                count += 1
+//                
+//            }
+//        }
+//        if count > 0 {
+//            self.countView.isHidden = false
+//            self.countLabel.isHidden = false
+//            self.deleteButton.isHidden = false
+//        }
+//        self.countLabel.text = String(count)
+        
     }
 }
 

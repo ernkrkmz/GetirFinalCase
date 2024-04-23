@@ -9,8 +9,9 @@ import Foundation
 
 // MARK: - WelcomeElement
 struct HorizontalWelcomeElement: Codable {
-    let products: [HorizontalProduct]
-    let id, name: String
+    //24 Nisan saat 01.00 Api den gelen veri değişti products'ı Optional olarak tanımlayınca sorun düzeldi
+    let products: [HorizontalProduct]?
+    let id, name: String?
 }
 
 // MARK: - Product

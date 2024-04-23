@@ -10,6 +10,8 @@ import UIKit
 protocol ProductDetailProtocol {
     func configure()
     func configureButtons()
+    func updateBasketView()
+    func setupCountLabel()
 }
 protocol ProductDetailDelegate {
     
@@ -19,11 +21,13 @@ protocol ProductDetailDelegate {
     func addHorizontalItem(add : HorizontalProduct)
     func addVerticalItem(add : VerticalProduct)
     
-    func deleteHorizontalItem()
-    func deleteVerticalItem()
+    func deleteHorizontalItem(product: HorizontalProduct)
+    func deleteVerticalItem(product: VerticalProduct)
     
 
 }
+
+// TODO: detail sayfasina geçerken ürünlerin adedini label a yaz
 
 class ProductDetailViewController: UIViewController {
 
@@ -53,12 +57,15 @@ class ProductDetailViewController: UIViewController {
     
     var delegate : ProductDetailDelegate?
     
+    var basket = Basket()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         configure()
         configureButtons()
-        
+        updateBasketView()
+        setupCountLabel()
         
     }
     
@@ -72,13 +79,18 @@ class ProductDetailViewController: UIViewController {
     }
     @IBAction func addButtonClicked(_ sender: Any) {
         
+        if horizontalProduct != nil{
+            self.basket.horizontalProduct?.append(horizontalProduct!)
+            delegate?.addHorizontalItem(add: self.horizontalProduct!)
+            delegate?.activateBasketView()
+        }else if verticalProduct != nil {
+            self.basket.verticalProduct?.append(verticalProduct! )
+            delegate?.addVerticalItem(add: verticalProduct!)
+            delegate?.activateBasketView()
+            
+        }
+        updateBasketView()
         
-        delegate?.addHorizontalItem(add: self.horizontalProduct!)
-        
-        ListingViewController().basket.horizontalProduct?.append(self.horizontalProduct!)
-        
-        
-        delegate?.activateBasketView()
         self.basketView.isHidden = false
         
         self.containerView.isHidden = false
@@ -94,18 +106,82 @@ class ProductDetailViewController: UIViewController {
         if count > 0 {
             count -= 1
             self.countLabel.text = String(count)
+            
+            if let horizontalProduct = self.horizontalProduct {
+                delegate?.deleteHorizontalItem(product: horizontalProduct)
+                
+                let index = self.basket.horizontalProduct?.lastIndex(where: { $0.id == horizontalProduct.id })
+                if let index = index {
+                    self.basket.horizontalProduct?.remove(at: index)
+                }
+                
+            }
+            if let verticalProduct = self.verticalProduct {
+                delegate?.deleteVerticalItem(product: verticalProduct)
+                
+                let index = self.basket.verticalProduct?.lastIndex(where: { $0.id == verticalProduct.id })
+                if let index = index {
+                    self.basket.verticalProduct?.remove(at: index)
+                }
+            }
+            self.updateBasketView()
+                
         }else {
             self.basketView.isHidden = true
             delegate?.DeactivateBasketView()
         }
        
-//        print("delete: \(ListingViewController().basket.horizontalProduct)")
     }
     
 }
 
+
 extension ProductDetailViewController: ProductDetailProtocol{
+    
+    func setupCountLabel() {
+        
+        var number = 0 // TODO: sonra bunu count ile degistir
+        
+        if let horizontalProduct = self.horizontalProduct {
+            for product in self.basket.horizontalProduct ?? [] {
+                if product.id == horizontalProduct.id{
+                    number += 1
+                }
+            }
+            self.countLabel.text = String(number)
+        }
+        if let verticalProduct = self.verticalProduct {
+            for product in self.basket.verticalProduct ?? [] {
+                if product.id == verticalProduct.id{
+                    number += 1
+                }
+            }
+            self.countLabel.text = String(number)
+        }
+        
+    }
+    
+    func updateBasketView() {
+        var price = Int(basketLabel.text ?? "0") ?? 0
+        
+        for horizontalItem in basket.horizontalProduct ?? [] {
+            price += Int(horizontalItem.price ?? 0)
+        }
+        for verticalItem in basket.verticalProduct ?? [] {
+            price += Int(verticalItem.price ?? 0)
+        }
+        self.basketLabel.text = String("₺ \(price)")
+        
+        if self.basketLabel.text == "0"{
+            self.basketView.isHidden = true
+        }else {
+            self.basketView.isHidden = false
+        }
+
+    }
+    
     func configureButtons() {
+        
         // TODO: butonlar doğru çalışmıyor -->  containerView.removeFromSuperview() çözüm yöntermi bu
         self.containerView.isHidden = false
         self.addButton.isHidden = false
@@ -143,6 +219,8 @@ extension ProductDetailViewController: ProductDetailProtocol{
             
         }
     }
+    
+    
     
 }
 

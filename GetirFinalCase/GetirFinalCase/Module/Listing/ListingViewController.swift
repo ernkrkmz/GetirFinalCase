@@ -16,6 +16,8 @@ protocol ListingViewControllerProtocol: AnyObject {
     func getHorizontalData()
     
     func updateBasketView()
+    
+    func updateCardData()
 }
 
 class ListingViewController: BaseViewController {
@@ -35,9 +37,8 @@ class ListingViewController: BaseViewController {
     var selectedHorizontalItem : HorizontalProduct?
     var selectedVeritcalItem : VerticalProduct?
     
-    // TODO: sepet fonsiyonlarını ekle
-    public var basket = Basket()
     
+    public var basket = Basket()
     
     
     override func viewDidLoad() {
@@ -51,10 +52,15 @@ class ListingViewController: BaseViewController {
         getHorizontalData()
         getVerticalData()
         
-        
-        
-        
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        updateBasketView()
+        //TODO: sonra yap2
+        self.horizontalCollectionView.reloadData()
+
+    }
+    
     var presenter : ListingPresenterProtocol?
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,6 +70,10 @@ class ListingViewController: BaseViewController {
 }
 // MARK: - Setup
 extension ListingViewController: ListingViewControllerProtocol {
+    func updateCardData() {
+        
+    }
+    
     
     func updateBasketView() {
         var price = Int(basketLabel.text ?? "0") ?? 0
@@ -126,8 +136,13 @@ extension ListingViewController: ListingViewControllerProtocol {
         basketView.isHidden = true
         basketView.layer.cornerRadius = 10
         basketImageView.layer.cornerRadius = 10
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        basketView.addGestureRecognizer(tap)
     }
-    
+    @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
+        performSegue(withIdentifier: "toBasketVC", sender: nil)
+    }
     
 }
 // MARK: - CollcetionView
@@ -146,6 +161,8 @@ extension ListingViewController: UICollectionViewDelegate , UICollectionViewData
         
         if collectionView == self.horizontalCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "horizontalCell", for: indexPath) as! HorizontalCollectionViewCell
+            
+            cell.horizontalBasket = self.basket.horizontalProduct ?? []
             
             cell.horizontalProduct = HorizontalItems[indexPath.row]
             cell.priceLabel.text = HorizontalItems[indexPath.row].priceText ?? ""
@@ -211,8 +228,12 @@ extension ListingViewController {
             let destination = segue.destination as! ProductDetailViewController
             destination.horizontalProduct = self.selectedHorizontalItem
             destination.verticalProduct = self.selectedVeritcalItem
-            
+            destination.basket = self.basket
             destination.delegate = self
+        }else if segue.identifier == "toBasketVC" {
+            let destination = segue.destination as! BasketViewController
+            destination.basket = self.basket
+            // TODO: delegate ekle
         }
     }
     
@@ -235,20 +256,31 @@ extension ListingViewController: ProductDetailDelegate {
     func addHorizontalItem(add: HorizontalProduct) {
         self.basket.horizontalProduct?.append(add)
         updateBasketView()
-//        print(basket.horizontalProduct)
-//        print("basket : \(self.basket.horizontalProduct?.first?.name)")
     }
     
     func addVerticalItem(add: VerticalProduct) {
         basket.verticalProduct?.append(add)
         updateBasketView()
     }
-    func deleteHorizontalItem() {
+    func deleteHorizontalItem(product: HorizontalProduct) {
+        do{
+            let index = self.basket.horizontalProduct?.lastIndex(where: { $0.id == product.id })
+            if let index = index {
+                self.basket.horizontalProduct?.remove(at: index)
+            }
+        }
         
+        updateBasketView()
     }
     
-    func deleteVerticalItem() {
-        
+    func deleteVerticalItem(product: VerticalProduct) {
+        do{
+            let index = self.basket.verticalProduct?.lastIndex(where: { $0.id == product.id })
+            if let index = index {
+                self.basket.verticalProduct?.remove(at: index)
+            }
+        }
+        updateBasketView()
     }
     
 }
@@ -282,7 +314,6 @@ extension ListingViewController: VerticalCollectionViewCellDelegate {
     
     func addVerticalProduct(product: VerticalProduct) {
         self.basket.verticalProduct?.append(product)
-        updateBasketView()
     }
     
     func deleteVerticalProduct(product: VerticalProduct) {
@@ -292,9 +323,9 @@ extension ListingViewController: VerticalCollectionViewCellDelegate {
                 self.basket.verticalProduct?.remove(at: index)
             }
         }
-        
-        updateBasketView()
+
     }
     
     
 }
+
