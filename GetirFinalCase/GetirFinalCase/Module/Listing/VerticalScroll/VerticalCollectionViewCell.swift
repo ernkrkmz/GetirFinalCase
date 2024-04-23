@@ -7,6 +7,15 @@
 
 import UIKit
 
+protocol VerticalCollectionViewCellDelegate {
+    
+    func activateBaskeView()
+    func deactivateBasketView()
+    
+    func addVerticalProduct(product : VerticalProduct)
+    func deleteVerticalProduct(product : VerticalProduct)
+}
+
 class VerticalCollectionViewCell:
     UICollectionViewCell {
 
@@ -29,6 +38,9 @@ class VerticalCollectionViewCell:
     
     var count = 0
     
+    var verticalProduct : VerticalProduct?
+    var delegate : VerticalCollectionViewCellDelegate?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -40,16 +52,25 @@ class VerticalCollectionViewCell:
         self.deleteButton.isHidden = false
         self.count += 1
         countLabel.text = String(self.count)
+        delegate?.addVerticalProduct(product: self.verticalProduct!)
+        delegate?.activateBaskeView()
     }
     
     @IBAction func deleteButtonClicked(_ sender: Any) {
-        if self.count <= 1 {
+        if self.count < 1 {
             self.count -= 1
             self.countView.isHidden = true
             self.deleteButton.isHidden = true
+            delegate?.deactivateBasketView()
+
         } else {
             self.count -= 1
             countLabel.text = String(self.count)
+            delegate?.deleteVerticalProduct(product: self.verticalProduct!)
+            if self.count == 0{
+                self.countView.isHidden = true
+                self.deleteButton.isHidden = true
+            }
         }
         
     }

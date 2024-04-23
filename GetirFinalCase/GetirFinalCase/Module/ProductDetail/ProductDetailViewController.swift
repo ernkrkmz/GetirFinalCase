@@ -11,6 +11,19 @@ protocol ProductDetailProtocol {
     func configure()
     func configureButtons()
 }
+protocol ProductDetailDelegate {
+    
+    func activateBasketView()
+    func DeactivateBasketView()
+    
+    func addHorizontalItem(add : HorizontalProduct)
+    func addVerticalItem(add : VerticalProduct)
+    
+    func deleteHorizontalItem()
+    func deleteVerticalItem()
+    
+
+}
 
 class ProductDetailViewController: UIViewController {
 
@@ -38,6 +51,8 @@ class ProductDetailViewController: UIViewController {
     
     var count = 0
     
+    var delegate : ProductDetailDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -57,6 +72,15 @@ class ProductDetailViewController: UIViewController {
     }
     @IBAction func addButtonClicked(_ sender: Any) {
         
+        
+        delegate?.addHorizontalItem(add: self.horizontalProduct!)
+        
+        ListingViewController().basket.horizontalProduct?.append(self.horizontalProduct!)
+        
+        
+        delegate?.activateBasketView()
+        self.basketView.isHidden = false
+        
         self.containerView.isHidden = false
         self.addButton.isHidden = false
         self.deleteButton.isHidden = false
@@ -70,9 +94,12 @@ class ProductDetailViewController: UIViewController {
         if count > 0 {
             count -= 1
             self.countLabel.text = String(count)
+        }else {
+            self.basketView.isHidden = true
+            delegate?.DeactivateBasketView()
         }
        
-
+//        print("delete: \(ListingViewController().basket.horizontalProduct)")
     }
     
 }
@@ -90,6 +117,8 @@ extension ProductDetailViewController: ProductDetailProtocol{
     func configure() {
         
         self.basketView.isHidden = true
+        basketView.layer.cornerRadius = 10
+        basketImageView.layer.cornerRadius = 10
         
         if self.horizontalProduct != nil {
             if horizontalProduct?.imageURL != nil {

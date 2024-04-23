@@ -10,4 +10,9 @@ import Foundation
 struct Basket {
     var verticalProduct : [VerticalProduct]?
     var horizontalProduct : [HorizontalProduct]?
+    
+    init(verticalProduct: [VerticalProduct]? = [], horizontalProduct: [HorizontalProduct]? = []) {
+        self.verticalProduct = verticalProduct
+        self.horizontalProduct = horizontalProduct
+    }
 }

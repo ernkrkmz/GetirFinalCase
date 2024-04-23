@@ -7,6 +7,15 @@
 
 import UIKit
 
+protocol HorizontalCollectionViewCellDelegate {
+    
+    func activateBaskeView()
+    func deactivateBasketView()
+    
+    func addHorizontalProduct(product : HorizontalProduct)
+    func deleteHorizontalProduct(product : HorizontalProduct)
+}
+
 class HorizontalCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imageview: UIImageView!
@@ -25,7 +34,11 @@ class HorizontalCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var countLabel: UILabel!
     
+    
     var count = 0
+    var horizontalProduct : HorizontalProduct?
+    
+    var delegate : HorizontalCollectionViewCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -39,18 +52,25 @@ class HorizontalCollectionViewCell: UICollectionViewCell {
         self.count += 1
         countLabel.text = String(self.count)
         
+        delegate?.activateBaskeView()
+        delegate?.addHorizontalProduct(product: self.horizontalProduct!)
         
     }
     
     @IBAction func deleteButtonClicked(_ sender: Any) {
-        if self.count <= 1 {
+        if self.count < 1 {
             self.count -= 1
             self.countView.isHidden = true
             self.deleteButton.isHidden = true
-            
+            delegate?.deactivateBasketView()
         } else {
             self.count -= 1
             countLabel.text = String(self.count)
+            delegate?.deleteHorizontalProduct(product: self.horizontalProduct!)
+            if self.count == 0{
+                self.countView.isHidden = true
+                self.deleteButton.isHidden = true
+            }
         }
         
     }
@@ -74,3 +94,6 @@ extension HorizontalCollectionViewCell {
         imageview.layer.borderColor = CGColor(red: 0.749, green: 0.749, blue: 0.749, alpha: 1.0)
     }
 }
+
+
+
