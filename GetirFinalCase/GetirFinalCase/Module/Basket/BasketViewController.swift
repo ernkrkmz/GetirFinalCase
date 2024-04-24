@@ -31,6 +31,8 @@ class BasketViewController: BaseViewController {
     
     var totalPrice = 0.0
     
+    var HorizontalItems : [HorizontalProduct] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -38,8 +40,14 @@ class BasketViewController: BaseViewController {
         tableView.rowHeight = 110
         tableView.register(UINib(nibName: "BasketTableViewCell", bundle: nil), forCellReuseIdentifier: "myTableViewCell")
         
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(UINib(nibName: "HorizontalCollectionViewCell", bundle: nil) , forCellWithReuseIdentifier: "horizontalCell")
+        collectionView.reloadData()
+        
         merged = (basket.horizontalProduct! as [AnyObject] ) + (basket.verticalProduct! as [AnyObject])
         
+        print(self.HorizontalItems)
     }
     
     @IBAction func complateOrderButtonClicked(_ sender: Any) {
@@ -100,6 +108,37 @@ extension BasketViewController: UITableViewDelegate, UITableViewDataSource {
         }
         self.finalPriceLabel.text = "₺ \(String(totalPrice))"
         return cell
+    }
+    
+    
+}
+
+// MARK: - CollectionView
+extension BasketViewController: UICollectionViewDelegate , UICollectionViewDataSource , UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.HorizontalItems.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "horizontalCell", for: indexPath) as! HorizontalCollectionViewCell
+        
+        cell.horizontalProduct = HorizontalItems[indexPath.row]
+        cell.priceLabel.text = HorizontalItems[indexPath.row].priceText ?? ""
+        cell.NameLabel.text = HorizontalItems[indexPath.row].name ?? ""
+        cell.attributeLabel.text = HorizontalItems[indexPath.row].shortDescription?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        if HorizontalItems[indexPath.row].imageURL != nil {
+            cell.imageview.load(url: URL(string: HorizontalItems[indexPath.row].imageURL ?? "https://cdn.getir.com/marketing/Getir_Logo_1621812382342.png")!)
+        } else {
+            cell.imageview.load(url: URL(string: HorizontalItems[indexPath.row].squareThumbnailURL ?? "https://cdn.getir.com/marketing/Getir_Logo_1621812382342.png")!)
+        }
+        
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let size = (collectionView.frame.size.width)
+        return CGSize(width: size - 285, height: 170)
+        
     }
     
     

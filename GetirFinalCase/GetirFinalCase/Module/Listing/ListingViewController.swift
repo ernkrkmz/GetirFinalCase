@@ -233,6 +233,7 @@ extension ListingViewController {
         }else if segue.identifier == "toBasketVC" {
             let destination = segue.destination as! BasketViewController
             destination.basket = self.basket
+            destination.HorizontalItems = self.HorizontalItems
             // TODO: delegate ekle
         }
     }
