@@ -56,16 +56,16 @@ class ListingViewController: BaseViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         updateBasketView()
-        //TODO: sonra yap2
+
         self.horizontalCollectionView.reloadData()
 
     }
     
-    var presenter : ListingPresenterProtocol?
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        presenter?.viewDidLoad()
+        
     }
 }
 // MARK: - Setup
@@ -234,7 +234,7 @@ extension ListingViewController {
             let destination = segue.destination as! BasketViewController
             destination.basket = self.basket
             destination.HorizontalItems = self.HorizontalItems
-            // TODO: delegate ekle
+            
         }
     }
     

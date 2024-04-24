@@ -27,7 +27,7 @@ protocol ProductDetailDelegate {
 
 }
 
-// TODO: detail sayfasina geçerken ürünlerin adedini label a yaz
+
 
 class ProductDetailViewController: UIViewController {
 
