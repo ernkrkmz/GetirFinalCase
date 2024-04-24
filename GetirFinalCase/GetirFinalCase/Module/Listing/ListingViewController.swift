@@ -76,13 +76,13 @@ extension ListingViewController: ListingViewControllerProtocol {
     
     
     func updateBasketView() {
-        var price = Int(basketLabel.text ?? "0") ?? 0
+        var price = Double(basketLabel.text ?? "0.0") ?? 0.0
         
         for horizontalItem in basket.horizontalProduct ?? [] {
-            price += Int(horizontalItem.price ?? 0)
+            price += Double(horizontalItem.price ?? 0)
         }
         for verticalItem in basket.verticalProduct ?? [] {
-            price += Int(verticalItem.price ?? 0)
+            price += Double(verticalItem.price ?? 0)
         }
         self.basketLabel.text = String("₺ \(price)")
         
@@ -314,6 +314,7 @@ extension ListingViewController: VerticalCollectionViewCellDelegate {
     
     func addVerticalProduct(product: VerticalProduct) {
         self.basket.verticalProduct?.append(product)
+        updateBasketView()
     }
     
     func deleteVerticalProduct(product: VerticalProduct) {
@@ -322,6 +323,7 @@ extension ListingViewController: VerticalCollectionViewCellDelegate {
             if let index = index {
                 self.basket.verticalProduct?.remove(at: index)
             }
+            updateBasketView()
         }
 
     }
@@ -329,3 +331,10 @@ extension ListingViewController: VerticalCollectionViewCellDelegate {
     
 }
 
+extension ListingViewController: BasketViewControllerDelegate{
+    func DeleteBasket() {
+        self.basket = Basket()
+    }
+    
+    
+}

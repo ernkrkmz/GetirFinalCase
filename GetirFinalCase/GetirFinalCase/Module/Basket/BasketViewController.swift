@@ -7,6 +7,9 @@
 
 import UIKit
 
+protocol BasketViewControllerDelegate {
+    func DeleteBasket()
+}
 
 
 class BasketViewController: BaseViewController {
@@ -26,6 +29,8 @@ class BasketViewController: BaseViewController {
     
     var merged : [AnyObject] = []
     
+    var totalPrice = 0.0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -38,10 +43,20 @@ class BasketViewController: BaseViewController {
     }
     
     @IBAction func complateOrderButtonClicked(_ sender: Any) {
-        print(merged)
+        
     }
     @IBAction func dissmissButtonClicked(_ sender: Any) {
         self.dismiss(animated: true)
+    }
+    
+    @IBAction func trashButtonClicked(_ sender: Any) {
+        
+        self.basket.horizontalProduct = []
+        self.basket.verticalProduct = []
+        self.merged = []
+        
+        self.finalPriceLabel.text = "₺0,0"
+        tableView.reloadData()
     }
     
 }
@@ -55,6 +70,35 @@ extension BasketViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myTableViewCell", for: indexPath) as! BasketTableViewCell
         
+        if let item = merged[indexPath.row] as? HorizontalProduct {
+            cell.nameLabel.text = item.name
+            cell.priceLabel.text = item.priceText
+            cell.attributeLabel.text = item.shortDescription
+            self.totalPrice += (item.price ?? 0.0)
+            if item.imageURL != nil {
+                
+                cell.imageView?.imageFromServerURL(urlString: item.imageURL!, PlaceHolderImage: UIImage.init(named: "Getir_Logo_Circle")!)
+                
+            }else{
+                cell.imageView?.imageFromServerURL(urlString: item.squareThumbnailURL!, PlaceHolderImage: UIImage.init(named: "Getir_Logo_Circle")!)
+            }
+        }
+        else if let item = merged[indexPath.row] as? VerticalProduct {
+            cell.nameLabel.text = item.name
+            cell.priceLabel.text = item.priceText
+            cell.attributeLabel.text = item.shortDescription
+            self.totalPrice += (item.price ?? 0.0)
+            if item.imageURL != nil {
+                
+                cell.imageView?.imageFromServerURL(urlString: item.imageURL!, PlaceHolderImage: UIImage.init(named: "Getir_Logo_Circle")!)
+                
+
+            }else{
+                cell.imageView?.imageFromServerURL(urlString: item.thumbnailURL!, PlaceHolderImage: UIImage.init(named: "Getir_Logo_Circle")!)
+
+            }
+        }
+        self.finalPriceLabel.text = "₺ \(String(totalPrice))"
         return cell
     }
     

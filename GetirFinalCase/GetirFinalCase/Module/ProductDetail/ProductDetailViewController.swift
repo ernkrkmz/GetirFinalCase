@@ -92,7 +92,6 @@ class ProductDetailViewController: UIViewController {
         updateBasketView()
         
         self.basketView.isHidden = false
-        
         self.containerView.isHidden = false
         self.addButton.isHidden = false
         self.deleteButton.isHidden = false
@@ -127,8 +126,8 @@ class ProductDetailViewController: UIViewController {
             self.updateBasketView()
                 
         }else {
-            self.basketView.isHidden = true
-            delegate?.DeactivateBasketView()
+//            self.basketView.isHidden = true
+//            delegate?.DeactivateBasketView()
         }
        
     }
@@ -140,7 +139,7 @@ extension ProductDetailViewController: ProductDetailProtocol{
     
     func setupCountLabel() {
         
-        var number = 0 // TODO: sonra bunu count ile degistir
+        var number = self.count
         
         if let horizontalProduct = self.horizontalProduct {
             for product in self.basket.horizontalProduct ?? [] {
@@ -162,13 +161,13 @@ extension ProductDetailViewController: ProductDetailProtocol{
     }
     
     func updateBasketView() {
-        var price = Int(basketLabel.text ?? "0") ?? 0
+        var price = Double(basketLabel.text ?? "0.0") ?? 0.0
         
         for horizontalItem in basket.horizontalProduct ?? [] {
-            price += Int(horizontalItem.price ?? 0)
+            price += Double(horizontalItem.price ?? 0)
         }
         for verticalItem in basket.verticalProduct ?? [] {
-            price += Int(verticalItem.price ?? 0)
+            price += Double(verticalItem.price ?? 0)
         }
         self.basketLabel.text = String("₺ \(price)")
         
